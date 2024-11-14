@@ -212,6 +212,8 @@ where rn <= 3;
 
 The findings from this project can help drive business decisions by understanding sales, order patterns, and product performance.
 
+## Author - Pranjal Nagar
+
 This project is part of my portfolio, showcasing the SQL skills essential for data analyst roles.
 
 
