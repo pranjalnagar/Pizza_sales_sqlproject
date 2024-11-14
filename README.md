@@ -23,7 +23,7 @@ This project is designed to demonstrate SQL skills and techniques typically used
 - **Database Creation**: The project starts by creating a database named `pizzahouse`.
 
 ```sql
-CREATE DATABASE p1_retail_db;
+CREATE DATABASE pizzahouse;
 
 ```
 
