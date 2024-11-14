@@ -1,43 +1,24 @@
-# Pizza Sales Analysis SQL Project
+create database pizzahouse;
+select * from pizzahouse.pizzas;
+create table orders(
+order_id int not null,
+order_date date not null,
+order_time time not null,
+primary key(order_id) );
+select * from pizzahouse.orders;
 
-## Project Overview
+create table order_details(
+order_details_id int not null,
+order_id int not null,
+pizza_id text not null,
+quantity int not null,
+primary key(order_details_id) );
+select * from pizzahouse.order_details;
 
-**Project Title**: Pizza Sales Analysis    
-**Database**: `pizzahouse`
-
-## Overview
-
-This project is designed to demonstrate SQL skills and techniques typically used by data analysts to explore, clean, and analyze pizza sales data. The project involves setting up a pizza sales database, performing exploratory data analysis (EDA), and answering specific business questions through SQL queries.
-
-## Objectives
-
-1. **Data Cleaning**: Identify and remove any records with missing or null values.
-2. **Exploratory Data Analysis (EDA)**: Perform basic exploratory data analysis to understand the dataset.
-3. **Business Analysis**: Use SQL queries to answer specific business questions and derive insights from the data.
-4. **Data Analysis**: Identify total revenue, most ordered pizza types, pizza categories, pizza ordered per day.
-
-## Project Structure
-
-### 1. Database Setup
-
-- **Database Creation**: The project starts by creating a database named `pizzahouse`.
-
-```sql
-CREATE DATABASE p1_retail_db;
-
-```
-
-### 2. Data Analysis & Findings
-
-The following SQL queries were developed to answer specific business questions:
-
-1. **Retrieve the total number of orders placed**:
-```sql
-select count(order_id) as total_orders from orders;
-```
-
-2. **Calculate the total revenue generated from pizza sales.**:
-```sql
+-- retrieve the total number of orders placed
+ select count(order_id) as total_orders from orders;
+ 
+--  Calculate the total revenue generated from pizza sales.
 SELECT 
     ROUND(SUM(order_details.quantity * pizzas.price),
             2) AS total_sales
@@ -45,10 +26,8 @@ FROM
     order_details
         JOIN
     pizzas ON pizzas.pizza_id = order_details.pizza_id;
-```
 
-3. **Identify the highest-priced pizza.**:
-```sql
+-- Identify the highest-priced pizza.
 SELECT 
     pizza_types.name, pizzas.price
 FROM
@@ -58,10 +37,7 @@ FROM
 ORDER BY pizzas.price DESC
 LIMIT 1;
 
-```
-
-4. **Identify the most common pizza size ordered.**:
-```sql
+-- Identify the most common pizza size ordered.
 SELECT 
     pizzas.size,
     COUNT(order_details.order_details_id) AS order_count
@@ -71,10 +47,8 @@ FROM
     order_details ON pizzas.pizza_id = order_details.pizza_id
 GROUP BY pizzas.size
 ORDER BY order_count DESC;
-```
 
-5. **List the top 5 most ordered pizza types along with their quantities.**:
-```sql
+-- List the top 5 most ordered pizza types along with their quantities.
 SELECT 
     pizza_types.name, SUM(order_details.quantity) AS quantity
 FROM
@@ -86,10 +60,8 @@ FROM
 GROUP BY pizza_types.name
 ORDER BY quantity DESC
 LIMIT 5;
-```
 
-6. **Join the necessary tables to find the total quantity of each pizza category ordered.**:
-```sql
+-- Join the necessary tables to find the total quantity of each pizza category ordered.
 SELECT 
     pizza_types.category,
     SUM(order_details.quantity) AS quantity
@@ -101,10 +73,8 @@ FROM
     order_details ON order_details.pizza_id = pizzas.pizza_id
 GROUP BY pizza_types.category
 ORDER BY quantity DESC;
-```
 
-7. **Determine the distribution of orders by hour of the day**:
-```sql
+-- Determine the distribution of orders by hour of the day.
 SELECT 
     HOUR(order_time) AS hours, COUNT(order_id) AS order_count
 FROM
@@ -117,10 +87,8 @@ SELECT
 FROM
     pizza_types
 GROUP BY category;
-```
 
-8. **Group the orders by date and calculate the average number of pizzas ordered per day. **:
-```sql
+-- Group the orders by date and calculate the average number of pizzas ordered per day.
  SELECT 
     ROUND(AVG(quantity), 0) as avg_pizza_ordered_per_day
 FROM
@@ -130,10 +98,8 @@ FROM
         orders
     JOIN order_details ON orders.order_id = order_details.order_id
     GROUP BY orders.order_date) AS order_quantity;
-```
-
-9. **Determine the top 3 most ordered pizza types based on revenue.**:
-```sql
+    
+-- Determine the top 3 most ordered pizza types based on revenue.
 SELECT 
     pizza_types.name,
     SUM(order_details.quantity * pizzas.price) AS revenue
@@ -146,10 +112,8 @@ FROM
 GROUP BY pizza_types.name
 ORDER BY revenue DESC
 LIMIT 3;
-```
 
-10. **Calculate the percentage contribution of each pizza type to total revenue.**:
-```sql
+-- Calculate the percentage contribution of each pizza type to total revenue.
 SELECT 
     pizza_types.category,
     ROUND((SUM(order_details.quantity * pizzas.price) / (SELECT 
@@ -168,9 +132,8 @@ FROM
     order_details ON order_details.pizza_id = pizzas.pizza_id
 GROUP BY pizza_types.category
 ORDER BY revenue DESC;
-```
-11. **Analyze the cumulative revenue generated over time.**:
-```sql
+
+-- Analyze the cumulative revenue generated over time.
 select order_date,
 sum(revenue) over(order by order_date) as cum_revenue from
 (select orders.order_date,
@@ -178,9 +141,8 @@ sum(order_details.quantity * pizzas.price) as revenue
 from order_details join pizzas on order_details.pizza_id = pizzas.pizza_id join orders
 on orders.order_id = order_details.order_id 
 group by orders.order_date) as sales ;
-```
-12. **Determine the top 3 most ordered pizza types based on revenue for each pizza category.**:
-```sql
+
+-- Determine the top 3 most ordered pizza types based on revenue for each pizza category.
 select name, revenue from
 (select category, name , revenue,
 rank() over(partition by category order by revenue desc) as rn
@@ -193,26 +155,6 @@ join order_details
 on order_details.pizza_id = pizzas.pizza_id
 group by pizza_types.category , pizza_types.name) as a) as b
 where rn <= 3;
-```
-
-## Findings
-
-- **Pizza Types and Categories**: The analysis identifies the best selling pizzas type and category.
-- **Orders and Revenue**: Total  numbers of orders and revenue generated.
-- **Sales Trends**: The analysis shows the distribution of orders by hours of the day and average number of pizza ordered per day.
 
 
-## Reports
 
-- **Sales Summary**: A detailed report summarizing total orders, total revenue and cumulative revenue generated over time.
-- **Trend Analysis**: Insights into sales trends across different hours of the day.
-- **Order Insights**: Reports on top selling pizza category and most ordered quantity & size ordered and revenue generated out of it.
-
-##Conclusion
-
-The findings from this project can help drive business decisions by understanding sales, order patterns, and product performance.
-
-This project is part of my portfolio, showcasing the SQL skills essential for data analyst roles.
-
-
-Thank you for your support, and I look forward to connecting with you!
